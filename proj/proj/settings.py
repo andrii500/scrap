@@ -27,6 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CELERY_BROKER_URL = ''
+
+# from celery.schedules import crontab
+CELERY_BEAT_SCHEDULE = {
+    'beat': {
+        'task': 'pars.tasks.beat',
+        'schedule': 10,
+    }
+}
 
 # Application definition
 
@@ -37,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'pars'
 ]
 
 MIDDLEWARE = [

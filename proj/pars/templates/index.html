@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ForkLog</title>
+</head>
+<body>
+    <div id="content">
+        {% for page in pages %}
+        <li>
+            {{ page.id|safe }}. <a href="{% url 'get-page' page.id %}"> {{ page.title|safe }} </a>
+        </li>
+        {% endfor %}
+    </div>
+</body>
+</html>

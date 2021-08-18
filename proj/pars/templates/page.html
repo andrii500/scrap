@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page</title>
+</head>
+<body>
+    {% block content %}
+        <h1>{{ page.title|safe }}</h1>
+        <span>{{ page.pub_date|safe }}</span>
+        <span>{{ page.article_author }}</span>
+        <p>{{ page.tags|safe }}</p>
+        <p>{{ page.text|safe }}</p>
+    {% endblock%}
+</body>
+</html>
