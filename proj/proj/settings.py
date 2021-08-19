@@ -28,14 +28,14 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-CELERY_RESULT_BACKEND = 'default'
+CELERY_RESULT_BACKEND = 'django-cache'
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'my_cache_table',
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+#         'LOCATION': 'my_cache_table',
+#     }
+# }
 
 # Application definition
 

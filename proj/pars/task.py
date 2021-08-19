@@ -6,7 +6,7 @@ import datetime as datetime
 
 
 @shared_task
-def parse_pages(request):
+def parse_pages():
     url = 'https://forklog.com/news/page/'
     page_num = 1
 
@@ -18,13 +18,13 @@ def parse_pages(request):
 
             for link in divs:
                 link = link.find('a').get('href')
-                parse_page(request, link)
+                parse_page(link)
             page_num += 1
         else:
             break
 
 
-def parse_page(request, url):
+def parse_page(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text, features="html.parser")
 
