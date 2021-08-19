@@ -28,14 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-CELERY_RESULT_BACKEND = 'django-cache'
-
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-#         'LOCATION': 'my_cache_table',
-#     }
-# }
+CELERY_BROKER_URL = 'pyamqp://guest@localhost//'
 
 # Application definition
 

@@ -5,8 +5,8 @@ from .task import parse_pages
 
 
 def get_pages(request):
-    pages = Page.objects.all()[0:10]
     parse_pages.delay()
+    pages = Page.objects.all()[0:10]
     return render(request, 'index.html', {'pages': pages})
 
 
