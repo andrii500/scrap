@@ -1,35 +1,54 @@
-from random import randrange
-from time import sleep
 from celery import shared_task
-from faker import Faker
-from django.core.mail import send_mail
 from .models import Page
+import requests
+from bs4 import BeautifulSoup
 import datetime as datetime
 
 
-fake = Faker()
-
-
 @shared_task
-def create_random_students(total):
-    result = []
+def parse_pages(request):
+    url = 'https://forklog.com/news/page/'
+    page_num = 1
 
-    for _ in range(total):
-        result.append(Page(
-            link='https://forklog.com/s-nachala-goda-eksperty-obnaruzhili-bolee-1500-moshennicheskih-sajtov-natselennyh-na-kriptoinvestorov/',
-            title='С начала года эксперты обнаружили более 1500 мошеннических сайтов, нацеленных на криптоинвесторов',
-            article_author='Каролина Сэлинджер',
-            pub_date=datetime.datetime.strptime('18.08.2021', '%d.%m.%Y').date(),
-            tags='#лаборатория касперского#мошенничество',
-            text='С января 2021 года специалисты «Лаборатории Касперского» зафиксировали более 1500 мошеннических ресурсов, направленных на криптовалютных инвесторов и заинтересованных в майнинге пользователей.'
-        ))
-    Page.objects.bulk_create(result)
+    while True:
+        if requests.get(f"{url}{page_num}"):
+            r = requests.get(f"{url}{str(page_num)}/")
+            soup = BeautifulSoup(r.text, features="html.parser")
+            divs = soup.find_all('div', {'class': 'post_item'})
 
-    return 'Pages write in base.'
+            for link in divs:
+                link = link.find('a').get('href')
+                parse_page(request, link)
+            page_num += 1
+        else:
+            break
 
 
-@shared_task
-def beat():
-    print('beat START')
-    sleep(5)
-    print('beat END')
+def parse_page(request, url):
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, features="html.parser")
+
+    if not soup.find('div', {'class': 'deleted_post_disclamer'}):
+        title = soup.find('h1').get_text()
+        pub_date_ = soup.find('span', {'class': 'article_date'}).get_text()
+        pub_date = datetime.datetime.strptime(pub_date_, '%d.%m.%Y').date()
+        article_author = soup.find('a', {'class': 'article_author'}).get_text()
+
+        if soup.find('div', {'class': 'post_tags_top'}):
+            post_tags = soup.find('div', {'class': 'post_tags_top'}).find_all('a')
+            tags = ''
+            for tag in post_tags:
+                tags += tag.get_text()
+        else:
+            tags = ''
+
+        text = soup.find('div', {'class': 'post_content'}).get_text()
+        text = text.replace(title, '')
+        text = text.replace(pub_date_, '')
+        text = text.replace(article_author, '')
+        text = text.replace(tags, '')
+        text = text.replace('Нашли ошибку в тексте? Выделите ее и нажмите CTRL+ENTER', '')
+        text = text.strip('\n')
+
+        if not Page.objects.filter(link=url).exists():
+            Page.objects.create(link=url, title=title, article_author=article_author, pub_date=pub_date, tags=tags, text=text)

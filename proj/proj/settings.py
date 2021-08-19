@@ -27,13 +27,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-CELERY_BROKER_URL = ''
 
-# from celery.schedules import crontab
-CELERY_BEAT_SCHEDULE = {
-    'beat': {
-        'task': 'pars.tasks.beat',
-        'schedule': 10,
+CELERY_RESULT_BACKEND = 'default'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
     }
 }
 
@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pars'
+    'django_celery_results',
+    'pars',
 ]
 
 MIDDLEWARE = [

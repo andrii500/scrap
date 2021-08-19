@@ -3,6 +3,6 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.parse_pages, name='parse-pages'),
+    path('', views.get_pages, name='parse-pages'),
     path('page/<int:page_id>', views.get_page, name='get-page'),
 ]
